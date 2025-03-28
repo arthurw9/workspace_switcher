@@ -5,8 +5,8 @@ if ! available wmctrl; then
   echo "Missing dependency needs to be installed:"
   echo "  sudo apt install wmctrl"
 else
-  list=$(wmctrl -d | awk '{ if ($2=="*") { print $10 "___<###<" } else print $10 }' | nl -v 0)
-  choice=$( zenity --list --column="num" --column="Desktop Name" --hide-column=1 --height=540 --width=300 $list)
+  list=$(wmctrl -d | awk '{ if ($2=="*") { print $10, "XXXX" } else { print $10, "." } }' | nl -v 0)
+  choice=$( zenity --list --column="num" --column="Desktop Name" --column="Curr" --hide-column=1 --height=540 --width=300 $list ) 
   if ! [ -z "$choice" ]; then
     wmctrl -s $choice
   fi
