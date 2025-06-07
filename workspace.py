@@ -70,6 +70,8 @@ def list_windows(desktop):
       print(window)
 
 def rename(desktop, new_name):
+  # workspace-names are numbered from 1 but in wmctrl they are numbered from 0.
+  desktop = int(desktop) + 1
   print(run_command(f"gsettings set org.mate.Marco.workspace-names name-{desktop} \"{new_name}\""))
 
 def main():
