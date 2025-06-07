@@ -1,10 +1,30 @@
 # Workspace Switcher for MATE desktop.
-This is a workspace switcher that displays a list of all desktop workspaces and
-let's the user select one to switch to.
 
-This is currently just a shell script. For it to be useful, put the
-switch_workspace.sh shell script somewhere and add a keyboard shortcut to run
-it. On my system keyboard shortcuts can be found in the menu under
+Update: I added a new workspace.py file that lets you:
+
+List all workspaces:
+
+`$ ./workspace.py list`
+
+Move windows from one workspace to another (in this example 2 to 4):
+
+`$ ./workspace.py move 2 4`
+
+List all windows:
+
+`$ ./workspace.py listwin`
+
+List all windows in a workspace (in this example workspace 5):
+
+`$ ./workspace.py listwin 5`
+
+Rename a workspace:
+
+`$ ./workspace.py rename 4 "misc"`
+
+There is a shell script called switch_workspace.sh. For it to be useful, put it
+somewhere and add a keyboard shortcut to run it. On my system keyboard shortcuts
+can be found in the menu under
 `System > Preferences > Hardware > Keyboard Shortcuts`.
 I recommend binding the script to the key combination `<Mod4>-d` or `<Mod4>-<Alt>-d`.
 Then when you press the key it will bring up a menu with all the desktop 
