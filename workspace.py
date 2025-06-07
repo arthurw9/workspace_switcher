@@ -7,13 +7,12 @@ def help():
   print("""
 examples:
   -------------------------------------------------------------------------
-  | workspace help       | Display this help.                             |
-  | workspace move 7 8   | Moves all windows from desktop 7 to desktop 8. |
-  | workspace list       | List all workspaces                            |
-  | workspace listwin    | List all windows                               |
-  | workspace listwin 8  | List all windows in workspace 8                |
-  | workspace rename 3 \ | Rename workspace 3 to "foo bar"                |
-  |     "foo bar"        |                                                |
+  | workspace help               | Display this help.                     |
+  | workspace move 7 8           | Moves all windows from desktop 7 to 8. |
+  | workspace list               | List all workspaces.                   |
+  | workspace listwin            | List all windows.                      |
+  | workspace listwin 8          | List all windows in workspace 8.       |
+  | workspace rename 3 "foo bar" | Rename workspace 3 to "foo bar".       |
   -------------------------------------------------------------------------
 """)
 
