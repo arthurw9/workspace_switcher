@@ -13,6 +13,7 @@ examples:
   | workspace listwin            | List all windows.                      |
   | workspace listwin 8          | List all windows in workspace 8.       |
   | workspace rename 3 "foo bar" | Rename workspace 3 to "foo bar".       |
+  | workspace switch 4           | switch to workspace 4.
   -------------------------------------------------------------------------
 """)
 
@@ -74,6 +75,9 @@ def rename(desktop, new_name):
   desktop = int(desktop) + 1
   print(run_command(f"gsettings set org.mate.Marco.workspace-names name-{desktop} \"{new_name}\""))
 
+def switch(desktop):
+  run_command(f"wmctrl -s {desktop}")
+
 def main():
   command = sys.argv[1]
   if command == "help":
@@ -91,6 +95,9 @@ def main():
     desktop = argv_or(2, "none")
     new_name = argv_or(3, "none")
     rename(desktop, new_name)
+  if command == "switch":
+    desktop = argv_or(2, "none")
+    switch(desktop)
 
 if __name__ == "__main__":
   main()
