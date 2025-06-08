@@ -8,16 +8,16 @@ def help():
 examples:
   -------------------------------------------------------------------------
   | workspace help               | Display this help.                     |
-  | workspace move 7 8           | Moves all windows from desktop 7 to 8. |
   | workspace list               | List all workspaces.                   |
   | workspace listwin            | List all windows.                      |
   | workspace listwin 8          | List all windows in workspace 8.       |
-  | workspace rename 3 "foo bar" | Rename workspace 3 to "foo bar".       |
   | workspace switch 4           | Switch to workspace 4.                 |
+  | workspace rename 3 "foo bar" | Rename workspace 3 to "foo bar".       |
   | workspace insert             | Insert a workspace before the current. |
   | workspace insert 3           | Insert a workspace before workspace 3. |
   | workspace delete             | Delete the current workspace.          |
   | workspace delete 3           | Delete workspace 3.                    |
+  | workspace movewins 7 8       | Moves all windows from desktop 7 to 8. |
   -------------------------------------------------------------------------
 """)
 
@@ -63,14 +63,14 @@ def get_window_info(desktop):
   return window_info
 
 def move_window_to_desktop(win_id, desktop):
+  debug(f"move_window_to_desktop: w {win_id} -> d {desktop}")
   result = run_command(f"wmctrl -i -r {win_id} -t {desktop}")
   if result.startswith("Error:"):
     print(result)
 
-def move(source_desktop, dest_desktop):
-  debug(f"move: d {source_desktop} -> d {dest_desktop}")
+def move_wins(source_desktop, dest_desktop):
+  debug(f"move_wins: d {source_desktop} -> d {dest_desktop}")
   for win_info in get_window_info(source_desktop):
-    debug(f"move: w {win_info[0]} -> d {dest_desktop}")
     move_window_to_desktop(win_info[0], dest_desktop)
 
 def list_workspaces():
@@ -133,7 +133,7 @@ def insert_before(desktop):
   desktop = int(desktop)
   # shift the other desktops down to make room
   for i in range(num_desktops - 2, int(desktop) - 1, -1):
-    move(i, i + 1)
+    move_wins(i, i + 1)
     rename(i + 1, desktop_info["list"][i][1])
   rename(int(desktop), "new-desktop")
   curr = desktop_info["curr"]
@@ -152,7 +152,7 @@ def delete(desktop):
     return
   debug(f"delete: d {desktop} of {desktop_info['num']}")
   for i in range(desktop, desktop_info["num"] - 1):
-    move(i + 1, i)
+    move_wins(i + 1, i)
     rename(i, desktop_info["list"][i + 1][1])
   num_desktops = desktop_info["num"] - 1
   run_command(f"wmctrl -n {num_desktops}")
@@ -164,10 +164,10 @@ def main():
   command = sys.argv[1]
   if command == "help":
     help()
-  if command == "move":
+  if command == "movewins":
     source_desktop = argv_or(2, "none")
     dest_desktop = argv_or(3, "none")
-    move(source_desktop, dest_desktop)
+    move_wins(source_desktop, dest_desktop)
   if command == "list":
     list_workspaces()
   if command == "listwin":
