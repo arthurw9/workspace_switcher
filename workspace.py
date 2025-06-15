@@ -164,28 +164,37 @@ def main():
   command = sys.argv[1]
   if command == "help":
     help()
+    return
   if command == "movewins":
     source_desktop = argv_or(2, "none")
     dest_desktop = argv_or(3, "none")
     move_wins(source_desktop, dest_desktop)
+    return
   if command == "list":
     list_workspaces()
+    return
   if command == "listwin":
     desktop = argv_or(2, "none")
     list_windows(desktop)
+    return
   if command == "rename":
     desktop = argv_or(2, "none")
     new_name = argv_or(3, "none")
     rename(desktop, new_name)
+    return
   if command == "switch":
     desktop = argv_or(2, "none")
     switch(desktop)
+    return
   if command == "insert":
     desktop = argv_or(2, "none")
     insert_before(desktop)
+    return
   if command == "delete":
     desktop = argv_or(2, "none")
     delete(desktop)
+    return
+  print(f"Error: Unknown command: {command}")
 
 if __name__ == "__main__":
   main()
