@@ -18,15 +18,23 @@ examples:
   | workspace delete             | Delete the current workspace.          |
   | workspace delete 3           | Delete workspace 3.                    |
   | workspace movewins 7 8       | Moves all windows from desktop 7 to 8. |
+  | workspace debug command      | Print debugging while running command  |
   -------------------------------------------------------------------------
 """)
 
-#debugging = True
 debugging = False
 
 def argv_or(n, default):
-  if len(sys.argv) > n:
-    return sys.argv[n]
+  return argv_or_impl(sys.argv, n, default)
+
+def argv_or_impl(argv, n, default):
+  if len(argv) < 2:
+    return default
+  if argv[1] == "debug":
+    debugging = True
+    n = n + 1
+  if len(argv) > n:
+    return argv[n]
   return default
 
 def debug(msg):
@@ -161,7 +169,7 @@ def delete(desktop):
     switch(curr - 1)
 
 def main():
-  command = sys.argv[1]
+  command = argv_or(1, "help")
   if command == "help":
     help()
     return
