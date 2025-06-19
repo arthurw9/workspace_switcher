@@ -29,6 +29,11 @@ Examples:
   | workspace swapleft           | Swap the current workspace to the left.|
   | workspace swapright          | Swap the curr workspace to the right.  |
   | workspace move 3 5           | Move workspace 3 to just before 5.     |
+  | workspace gui_rename         | Open a dialog box to rename the current|
+  |                              | workspace.                             |
+  | workspace gui_switch         | Open a dialog box to list all the      |
+  |                              | workspaces and allow the user to switch|
+  |                              | to another workspace.
   -------------------------------------------------------------------------
 """
     )

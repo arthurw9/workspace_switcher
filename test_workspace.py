@@ -7,11 +7,13 @@ class TestWorkspace(unittest.TestCase):
   def test_argv_or(self):
     # create a shortcut to the function under test
     f = workspace.argv_or_impl
-    # first argument is help.
+    # Get the first argument
     self.assertEqual("help", f(["workspace", "help"], 1, "default"))
-    # first real argument is help.
+    self.assertEqual("default", f(["workspace"], 1, "default"))
+    # Get the first argument should omit the "debug" keyword
     # "debug" in position 1 is not considered an argument.
     self.assertEqual("help", f(["workspace", "debug", "help"], 1, "default"))
+    self.assertEqual("default", f(["workspace", "debug"], 1, "default"))
     # second argument is "1"
     self.assertEqual("1", f(["ws", "mv", "1", "2"], 2, "default"))
     self.assertEqual("1", f(["ws", "debug", "mv", "1", "2"], 2, "default"))
