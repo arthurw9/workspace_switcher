@@ -22,12 +22,12 @@ Examples:
   | workspace movewins 7 8       | Moves all windows from desktop 7 to 8. |
   | workspace debug command      | Print debugging while running command. |
   | workspace swap 3 5           | Swap workspaces 3 and 5.               |
+  | workspace swapleft           | Swap the current workspace to the left.|
+  | workspace swapright          | Swap the curr workspace to the right.  |
   -------------------------------------------------------------------------
 
   TODO: 
   -------------------------------------------------------------------------
-  | workspace swapleft           | Swap the current workspace to the left.|
-  | workspace swapright          | Swap the curr workspace to the right.  |
   | workspace move 3 5           | Move workspace 3 to just before 5.     |
   | workspace gui_rename         | Open a dialog box to rename the current|
   |                              | workspace.                             |
@@ -221,6 +221,29 @@ def swap(desktop1, desktop2):
     rename(desktop2, desktop_info["list"][desktop1][1])
 
 
+def swapleft():
+    debug("swapleft")
+    desktop_info = get_desktop_info()
+    curr = desktop_info["curr"]
+    if curr < 1:
+        print(f"Error: Already at the far left")
+        return
+    swap(curr, curr - 1)
+    switch(curr - 1)
+
+
+def swapright():
+    debug("swapright")
+    desktop_info = get_desktop_info()
+    curr = desktop_info["curr"]
+    num = desktop_info["num"]
+    if curr >= num - 1:
+        print(f"Error: Already at the far right")
+        return
+    swap(curr, curr + 1)
+    switch(curr + 1)
+
+
 def delete(desktop):
     desktop_info = get_desktop_info()
     if desktop == "none":
@@ -280,6 +303,12 @@ def main():
         desktop1 = argv_or(2, "none")
         desktop2 = argv_or(3, "none")
         swap(desktop1, desktop2)
+        return
+    if command == "swapleft":
+        swapleft()
+        return
+    if command == "swapright":
+        swapright()
         return
     print(f"Error: Unknown command: {command}")
 

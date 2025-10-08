@@ -80,6 +80,53 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual(desktop_info["list"][num][1], "new-desktop-123")
         workspace.delete(num)
 
+    def test_swapleft(self):
+        desktop_info = workspace.get_desktop_info()
+        curr = desktop_info["curr"]
+        num = desktop_info["num"]
+        workspace.insert_before(num)
+        workspace.rename(num, "new-desktop-B")
+        ShortSleep()
+        workspace.insert_before(num)
+        workspace.rename(num, "new-desktop-A")
+        ShortSleep()
+        workspace.switch(num + 1)
+        desktop_info = workspace.get_desktop_info()
+        self.assertEqual(desktop_info["curr"], num + 1)
+        self.assertEqual(desktop_info["list"][num][1], "new-desktop-A")
+        self.assertEqual(desktop_info["list"][num + 1][1], "new-desktop-B")
+        workspace.swapleft()
+        desktop_info = workspace.get_desktop_info()
+        self.assertEqual(desktop_info["curr"], num)
+        self.assertEqual(desktop_info["list"][num][1], "new-desktop-B")
+        self.assertEqual(desktop_info["list"][num + 1][1], "new-desktop-A")
+        workspace.delete(num)
+        workspace.delete(num)
+
+
+    def test_swapright(self):
+        desktop_info = workspace.get_desktop_info()
+        curr = desktop_info["curr"]
+        num = desktop_info["num"]
+        workspace.insert_before(num)
+        workspace.rename(num, "new-desktop-B")
+        ShortSleep()
+        workspace.insert_before(num)
+        workspace.rename(num, "new-desktop-A")
+        ShortSleep()
+        workspace.switch(num)
+        desktop_info = workspace.get_desktop_info()
+        self.assertEqual(desktop_info["curr"], num)
+        self.assertEqual(desktop_info["list"][num][1], "new-desktop-A")
+        self.assertEqual(desktop_info["list"][num + 1][1], "new-desktop-B")
+        workspace.swapright()
+        desktop_info = workspace.get_desktop_info()
+        self.assertEqual(desktop_info["curr"], num + 1)
+        self.assertEqual(desktop_info["list"][num][1], "new-desktop-B")
+        self.assertEqual(desktop_info["list"][num + 1][1], "new-desktop-A")
+        workspace.delete(num)
+        workspace.delete(num)
+
 
 if __name__ == "__main__":
     unittest.main()
