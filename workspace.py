@@ -60,7 +60,9 @@ def debug(msg):
 
 
 def run_command(command, stdin=""):
-    result = subprocess.run(command, input=stdin, capture_output=True, shell=True, text=True)
+    result = subprocess.run(
+        command, input=stdin, capture_output=True, shell=True, text=True
+    )
     if result.returncode == 0:
         return result.stdout
     else:
@@ -308,7 +310,7 @@ def gui_switch():
             stdin += ">>>>\n"
         else:
             stdin += ".\n"
-        stdin += desktop_info['list'][i][1] + "\n"
+        stdin += desktop_info["list"][i][1] + "\n"
     result = run_command(cmd, stdin)
     result = result.strip()
     switch(result)

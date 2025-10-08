@@ -5,6 +5,11 @@ import workspace
 import time
 
 
+# TODO: Monkey patch the run_command method in workspace and fix all of these
+# tests. We can patch run_command to return known values and capture a log of
+# each command sent.
+
+
 def ShortSleep():
     # It seems some time required before renames are visible to wmctrl.
     # TODO: Figure out a way around this.
