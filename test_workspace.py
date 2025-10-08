@@ -103,7 +103,6 @@ class TestWorkspace(unittest.TestCase):
         workspace.delete(num)
         workspace.delete(num)
 
-
     def test_swapright(self):
         desktop_info = workspace.get_desktop_info()
         curr = desktop_info["curr"]

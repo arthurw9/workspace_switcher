@@ -24,10 +24,6 @@ Examples:
   | workspace swap 3 5           | Swap workspaces 3 and 5.               |
   | workspace swapleft           | Swap the current workspace to the left.|
   | workspace swapright          | Swap the curr workspace to the right.  |
-  -------------------------------------------------------------------------
-
-  TODO: 
-  -------------------------------------------------------------------------
   | workspace move 3 5           | Move workspace 3 to just before 5.     |
   | workspace gui_rename         | Open a dialog box to rename the current|
   |                              | workspace.                             |
@@ -63,8 +59,8 @@ def debug(msg):
         print(f"debug: {msg}")
 
 
-def run_command(command):
-    result = subprocess.run(command, capture_output=True, shell=True, text=True)
+def run_command(command, stdin=""):
+    result = subprocess.run(command, input=stdin, capture_output=True, shell=True, text=True)
     if result.returncode == 0:
         return result.stdout
     else:
@@ -155,9 +151,9 @@ def switch(desktop):
 def get_desktop_info():
     """returns a map with keys:
 
-       curr: current desktop number
-       num: number of desktops
-       list: array of tuples(num, name)
+    curr: current desktop number
+    num: number of desktops
+    list: array of tuples(num, name)
     """
     desktop_info = {}
     desktop_info["list"] = []
@@ -194,7 +190,6 @@ def insert_before(desktop):
 
 
 def swap(desktop1, desktop2):
-    debug(f"swap {desktop1} {desktop2}")
     if desktop1 == "none" or desktop2 == "none":
         print("Error: Please specify 2 desktop numbers to swap")
         return
@@ -210,6 +205,7 @@ def swap(desktop1, desktop2):
     ):
         print(f"Error: Desktop numbers must range from 0 to {num_desktops - 1}")
         return
+    debug(f"swap {desktop1} {desktop2}")
     # temporarily add another desktop at the end
     run_command(f"wmctrl -n {num_desktops + 1}")
     move_wins(desktop1, num_desktops)
@@ -265,6 +261,59 @@ def delete(desktop):
         switch(curr - 1)
 
 
+def move(desktop, new_idx):
+    if desktop == "none" or new_idx == "none":
+        print("Error: Please specify the desktop to move and the new location")
+        return
+    desktop = int(desktop)
+    new_idx = int(new_idx)
+    desktop_info = get_desktop_info()
+    num_desktops = desktop_info["num"]
+    if desktop < 0 or desktop >= num_desktops:
+        print(f"Error: Desktop number must range from 0 to {num_desktops - 1}")
+        return
+    if new_idx < 0 or new_idx > num_desktops:
+        print(f"Error: The new location must range from 0 to {num_desktops}")
+        return
+    if new_idx == desktop:
+        return
+    debug(f"move {desktop} {new_idx}")
+    insert_before(new_idx)
+    if new_idx < desktop:
+        desktop += 1
+    swap(desktop, new_idx)
+    delete(desktop)
+
+
+def gui_rename():
+    desktop_info = get_desktop_info()
+    curr = desktop_info["curr"]
+    name = desktop_info["list"][curr][1]
+    name = run_command(
+        f"zenity --text='Rename Current Workspace' --entry --entry-text='{name}'"
+    )
+    name = name.strip()
+    rename(curr, name)
+
+
+def gui_switch():
+    desktop_info = get_desktop_info()
+    num_desktops = desktop_info["num"]
+    curr = desktop_info["curr"]
+    cmd = "zenity --list --column=num --column=Curr --column='Desktop Name' --hide-column=1 --height=540 --width=300"
+    stdin = ""
+    for i in range(num_desktops):
+        stdin += f"{i}\n"
+        if curr == i:
+            stdin += ">>>>\n"
+        else:
+            stdin += ".\n"
+        stdin += desktop_info['list'][i][1] + "\n"
+    result = run_command(cmd, stdin)
+    result = result.strip()
+    switch(result)
+
+
 def main():
     command = argv_or(1, "help")
     if command == "help":
@@ -309,6 +358,17 @@ def main():
         return
     if command == "swapright":
         swapright()
+        return
+    if command == "move":
+        desktop = argv_or(2, "none")
+        new_idx = argv_or(3, "none")
+        move(desktop, new_idx)
+        return
+    if command == "gui_rename":
+        gui_rename()
+        return
+    if command == "gui_switch":
+        gui_switch()
         return
     print(f"Error: Unknown command: {command}")
 
