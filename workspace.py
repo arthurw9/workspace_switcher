@@ -21,11 +21,11 @@ Examples:
   | workspace delete 3           | Delete workspace 3.                    |
   | workspace movewins 7 8       | Moves all windows from desktop 7 to 8. |
   | workspace debug command      | Print debugging while running command. |
+  | workspace swap 3 5           | Swap workspaces 3 and 5.               |
   -------------------------------------------------------------------------
 
   TODO: 
   -------------------------------------------------------------------------
-  | workspace swap 3 5           | Swap the order of workspace 3 and 5.   |
   | workspace swapleft           | Swap the current workspace to the left.|
   | workspace swapright          | Swap the curr workspace to the right.  |
   | workspace move 3 5           | Move workspace 3 to just before 5.     |
