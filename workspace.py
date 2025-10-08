@@ -33,7 +33,7 @@ Examples:
   |                              | workspace.                             |
   | workspace gui_switch         | Open a dialog box to list all the      |
   |                              | workspaces and allow the user to switch|
-  |                              | to another workspace.
+  |                              | to another workspace.                  |
   -------------------------------------------------------------------------
 """
     )
@@ -47,6 +47,7 @@ def argv_or(n, default):
 
 
 def argv_or_impl(argv, n, default):
+    global debugging
     if len(argv) < 2:
         return default
     if argv[1] == "debug":
@@ -131,9 +132,14 @@ def list_windows(desktop):
 
 
 def rename(desktop, new_name):
+    debug(f"rename: d {desktop} -> [{new_name}]")
+    # TODO: Add support for other window managers besides Marco.
+    rename_marco(desktop, new_name)
+
+
+def rename_marco(desktop, new_name):
     # workspace-names are numbered from 1 but in wmctrl they are numbered from 0.
     desktop = int(desktop) + 1
-    debug(f"rename: d {desktop - 1} -> [{new_name}]")
     result = run_command(
         f'gsettings set org.mate.Marco.workspace-names name-{desktop} "{new_name}"'
     )
@@ -147,6 +153,12 @@ def switch(desktop):
 
 
 def get_desktop_info():
+    """returns a map with keys:
+
+       curr: current desktop number
+       num: number of desktops
+       list: array of tuples(num, name)
+    """
     desktop_info = {}
     desktop_info["list"] = []
     desktops = run_command("wmctrl -d")
@@ -179,6 +191,34 @@ def insert_before(desktop):
     curr = desktop_info["curr"]
     if desktop <= curr:
         switch(curr + 1)
+
+
+def swap(desktop1, desktop2):
+    debug(f"swap {desktop1} {desktop2}")
+    if desktop1 == "none" or desktop2 == "none":
+        print("Error: Please specify 2 desktop numbers to swap")
+        return
+    desktop1 = int(desktop1)
+    desktop2 = int(desktop2)
+    desktop_info = get_desktop_info()
+    num_desktops = desktop_info["num"]
+    if (
+        desktop1 < 0
+        or desktop1 >= num_desktops
+        or desktop2 < 0
+        or desktop2 >= num_desktops
+    ):
+        print(f"Error: Desktop numbers must range from 0 to {num_desktops - 1}")
+        return
+    # temporarily add another desktop at the end
+    run_command(f"wmctrl -n {num_desktops + 1}")
+    move_wins(desktop1, num_desktops)
+    move_wins(desktop2, desktop1)
+    move_wins(num_desktops, desktop2)
+    # remove the temporary desktop
+    run_command(f"wmctrl -n {num_desktops}")
+    rename(desktop1, desktop_info["list"][desktop2][1])
+    rename(desktop2, desktop_info["list"][desktop1][1])
 
 
 def delete(desktop):
@@ -235,6 +275,11 @@ def main():
     if command == "delete":
         desktop = argv_or(2, "none")
         delete(desktop)
+        return
+    if command == "swap":
+        desktop1 = argv_or(2, "none")
+        desktop2 = argv_or(3, "none")
+        swap(desktop1, desktop2)
         return
     print(f"Error: Unknown command: {command}")
 
