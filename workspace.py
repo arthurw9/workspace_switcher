@@ -313,7 +313,8 @@ def gui_switch():
         stdin += desktop_info["list"][i][1] + "\n"
     result = run_command(cmd, stdin)
     result = result.strip()
-    switch(result)
+    if not result.startswith("Error"):
+        switch(result)
 
 
 def main():
