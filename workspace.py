@@ -70,6 +70,8 @@ def run_command(command, stdin=""):
 
 
 def get_window_info(desktop):
+    """Returns an array of tuples:
+       (win_id, win_desktop, win_name)"""
     debug(f"get_window_info: d {desktop}")
     window_info = []
     result = run_command("wmctrl -l")
@@ -295,7 +297,9 @@ def gui_rename():
         f"zenity --text='Rename Current Workspace' --entry --entry-text='{name}'"
     )
     name = name.strip()
-    rename(curr, name)
+    # TODO: What if the actual name starts with Error. Need to fix run_command.
+    if not name.startswith("Error"):
+        rename(curr, name)
 
 
 def gui_switch():
