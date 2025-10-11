@@ -71,7 +71,7 @@ def run_command(command, stdin=""):
 
 def get_window_info(desktop):
     """Returns an array of tuples:
-       (win_id, win_desktop, win_name)"""
+    (win_id, win_desktop, win_name)"""
     debug(f"get_window_info: d {desktop}")
     window_info = []
     result = run_command("wmctrl -l")
