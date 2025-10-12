@@ -164,13 +164,13 @@ def get_desktop_info():
     desktops = run_command("wmctrl -d")
     desktop_list = desktops.split("\n")
     for desktop in desktop_list:
-        raw = desktop.split(" ")
-        if len(raw) < 11:
+        raw = desktop.split()
+        if len(raw) < 10:
             continue
-        if raw[2] == "*":
+        if raw[1] == "*":
             desktop_info["curr"] = int(raw[0])
-        desktop_info["list"].append((raw[0], " ".join(raw[13:])))
-        debug(f"get_desktop_info: d {raw[0]} = [{' '.join(raw[13:])}]")
+        desktop_info["list"].append((raw[0], " ".join(raw[9:])))
+        debug(f"get_desktop_info: d {raw[0]} = [{' '.join(raw[9:])}]")
     desktop_info["num"] = len(desktop_info["list"])
     return desktop_info
 
