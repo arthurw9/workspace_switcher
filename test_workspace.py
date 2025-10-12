@@ -14,6 +14,11 @@ def ShortSleep():
     time.sleep(0.1)  # sleep in seconds.
 
 
+# Real tests use the real desktop not the fake one. These tests attempt to
+# leave the final state of the desktop the same as before the test.
+run_real_tests = False
+
+
 class TestWorkspace(unittest.TestCase):
     def test_argv_or(self):
         # create a shortcut to the function under test
@@ -36,6 +41,8 @@ class TestWorkspace(unittest.TestCase):
         workspace.debugging = False
 
     def test_real_insert_and_delete_should_move_current_workspace(self):
+        if not run_real_tests:
+            return
         desktop_info = workspace.get_desktop_info()
         curr = desktop_info["curr"]
         win_info = workspace.get_window_info("none")
@@ -67,6 +74,8 @@ class TestWorkspace(unittest.TestCase):
         self.assertNotEqual(win_info, win_info2)
 
     def test_real_swap(self):
+        if not run_real_tests:
+            return
         desktop_info = workspace.get_desktop_info()
         curr = desktop_info["curr"]
         num = desktop_info["num"]
@@ -84,6 +93,8 @@ class TestWorkspace(unittest.TestCase):
         workspace.delete(num)
 
     def test_real_swapleft(self):
+        if not run_real_tests:
+            return
         desktop_info = workspace.get_desktop_info()
         curr = desktop_info["curr"]
         num = desktop_info["num"]
@@ -107,6 +118,8 @@ class TestWorkspace(unittest.TestCase):
         workspace.delete(num)
 
     def test_real_swapright(self):
+        if not run_real_tests:
+            return
         desktop_info = workspace.get_desktop_info()
         curr = desktop_info["curr"]
         num = desktop_info["num"]
@@ -497,12 +510,36 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual(f.GetWorkspaces(), ["main", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "main")
 
+    @patch("workspace.run_command")
+    def test_movewins(self, fake_run_command):
+        f = fake_desktop.FakeDesktop()
+        f.SetWorkspaces(["main", "middle", "last"])
+        f.OpenWindow(0, "Terminal")
+        f.OpenWindow(1, "Life Expectancy - Chromium")
+        f.OpenWindow(1, "Inbox - Chromium")
+        f.OpenWindow(2, "TuxRacer")
 
-# TODO: test movewins
+        def fake_run(command, stdin=""):
+            return f.run_command(command, stdin)
+
+        fake_run_command.side_effect = fake_run
+
+        workspace.move_wins(1, 2)
+
+        self.assertEqual(f.GetWindowsOnWorkspace(0), ["Terminal"])
+        self.assertEqual(f.GetWindowsOnWorkspace(1), [])
+        self.assertCountEqual(
+            f.GetWindowsOnWorkspace(2),
+            ["Life Expectancy - Chromium", "Inbox - Chromium", "TuxRacer"],
+        )
+
+
 # TODO: test swap
 # TODO: test swapright
 # TODO: test swapleft
 # TODO: test move
+# TODO: test gui_rename
+# TODO: test gui_switch
 
 
 if __name__ == "__main__":
