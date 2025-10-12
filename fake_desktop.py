@@ -7,6 +7,9 @@ class FakeDesktop:
         self._curr_workspace_idx = 0
         self._next_window_id = 1
         self.OpenWindow(-1, "Bottom Panel")
+        # Key = (command, stdin). Value = response
+        self._expected_commands = {}
+        self.unexpected_commands = []
 
     def _WorkspaceRow(self, idx, name):
         curr = "-"
@@ -59,6 +62,9 @@ class FakeDesktop:
                 result.append(win_name)
         return result
 
+    def expect_command(self, expected_command, expected_stdin, response):
+        self._expected_commands[(expected_command, expected_stdin)] = response
+
     def run_command(self, command, stdin=""):
         if command == "wmctrl -l":
             return self._ListWins()
@@ -97,7 +103,10 @@ class FakeDesktop:
             new_workspace_idx = int(command.split()[5])
             self._windows[win_id][0] = new_workspace_idx
             return ""
+        if (command, stdin) in self._expected_commands:
+            return self._expected_commands[(command, stdin)]
         result = f"Error: Unknown Command: {command}"
+        self.unexpected_commands.append((command, stdin))
         print(result)
         return result
 

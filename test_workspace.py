@@ -469,9 +469,9 @@ class TestWorkspace(unittest.TestCase):
         workspace.delete(1)
         self.assertEqual(f.GetWorkspaces(), ["main", "two", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "two")
-        self.assertEqual(f.GetWindowsOnWorkspace(0), ["gmail - chromium"])
-        self.assertEqual(f.GetWindowsOnWorkspace(1), ["TuxRacer", "Terminal"])
-        self.assertEqual(f.GetWindowsOnWorkspace(2), ["Terminal"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(0), ["gmail - chromium"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(1), ["TuxRacer", "Terminal"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(2), ["Terminal"])
 
     @patch("sys.stdout", new_callable=io.StringIO)
     @patch("workspace.run_command")
@@ -526,20 +526,173 @@ class TestWorkspace(unittest.TestCase):
 
         workspace.move_wins(1, 2)
 
-        self.assertEqual(f.GetWindowsOnWorkspace(0), ["Terminal"])
-        self.assertEqual(f.GetWindowsOnWorkspace(1), [])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(0), ["Terminal"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(1), [])
         self.assertCountEqual(
             f.GetWindowsOnWorkspace(2),
             ["Life Expectancy - Chromium", "Inbox - Chromium", "TuxRacer"],
         )
 
+    @patch("workspace.run_command")
+    def test_swap(self, fake_run_command):
+        f = fake_desktop.FakeDesktop()
+        f.SetWorkspaces(["first", "middle", "last"])
+        f.OpenWindow(0, "Terminal")
+        f.OpenWindow(0, "Select items")
+        f.OpenWindow(1, "Life Expectancy - Chromium")
+        f.OpenWindow(1, "Inbox - Chromium")
+        f.OpenWindow(2, "TuxRacer")
+        f.OpenWindow(2, "Sudoku")
 
-# TODO: test swap
-# TODO: test swapright
-# TODO: test swapleft
-# TODO: test move
-# TODO: test gui_rename
-# TODO: test gui_switch
+        def fake_run(command, stdin=""):
+            return f.run_command(command, stdin)
+
+        fake_run_command.side_effect = fake_run
+
+        workspace.swap(0, 2)
+
+        self.assertEqual(f.GetWorkspaces(), ["last", "middle", "first"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(0), ["TuxRacer", "Sudoku"])
+        self.assertCountEqual(
+            f.GetWindowsOnWorkspace(1),
+            ["Life Expectancy - Chromium", "Inbox - Chromium"],
+        )
+        self.assertCountEqual(f.GetWindowsOnWorkspace(2), ["Terminal", "Select items"])
+
+    @patch("workspace.run_command")
+    def test_swapleft(self, fake_run_command):
+        f = fake_desktop.FakeDesktop()
+        f.SetWorkspaces(["a", "b", "c"])
+        f.Switch(1)
+        self.assertEqual(f.GetCurrWorkspace(), "b")
+
+        f.OpenWindow(0, "a1")
+        f.OpenWindow(0, "a2")
+        f.OpenWindow(1, "b1")
+        f.OpenWindow(1, "b2")
+        f.OpenWindow(2, "c1")
+        f.OpenWindow(2, "c2")
+
+        def fake_run(command, stdin=""):
+            return f.run_command(command, stdin)
+
+        fake_run_command.side_effect = fake_run
+
+        workspace.swapleft()
+
+        self.assertEqual(f.GetWorkspaces(), ["b", "a", "c"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(0), ["b1", "b2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(1), ["a1", "a2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(2), ["c1", "c2"])
+
+    @patch("workspace.run_command")
+    def test_swapright(self, fake_run_command):
+        f = fake_desktop.FakeDesktop()
+        f.SetWorkspaces(["a", "b", "c"])
+        f.Switch(1)
+        self.assertEqual(f.GetCurrWorkspace(), "b")
+
+        f.OpenWindow(0, "a1")
+        f.OpenWindow(0, "a2")
+        f.OpenWindow(1, "b1")
+        f.OpenWindow(1, "b2")
+        f.OpenWindow(2, "c1")
+        f.OpenWindow(2, "c2")
+
+        def fake_run(command, stdin=""):
+            return f.run_command(command, stdin)
+
+        fake_run_command.side_effect = fake_run
+
+        workspace.swapright()
+
+        self.assertEqual(f.GetWorkspaces(), ["a", "c", "b"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(0), ["a1", "a2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(1), ["c1", "c2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(2), ["b1", "b2"])
+
+    @patch("workspace.run_command")
+    def test_move(self, fake_run_command):
+        f = fake_desktop.FakeDesktop()
+        f.SetWorkspaces(["a", "b", "c", "d", "e"])
+        f.Switch(1)
+        self.assertEqual(f.GetCurrWorkspace(), "b")
+
+        f.OpenWindow(0, "a1")
+        f.OpenWindow(0, "a2")
+        f.OpenWindow(1, "b1")
+        f.OpenWindow(1, "b2")
+        f.OpenWindow(2, "c1")
+        f.OpenWindow(2, "c2")
+        f.OpenWindow(3, "d1")
+        f.OpenWindow(3, "d2")
+        f.OpenWindow(4, "e1")
+        f.OpenWindow(4, "e2")
+
+        def fake_run(command, stdin=""):
+            return f.run_command(command, stdin)
+
+        fake_run_command.side_effect = fake_run
+
+        workspace.move(3, 1)
+
+        self.assertEqual(f.GetWorkspaces(), ["a", "d", "b", "c", "e"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(0), ["a1", "a2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(1), ["d1", "d2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(2), ["b1", "b2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(3), ["c1", "c2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(4), ["e1", "e2"])
+
+        workspace.move(4, 0)
+
+        self.assertEqual(f.GetWorkspaces(), ["e", "a", "d", "b", "c"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(0), ["e1", "e2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(1), ["a1", "a2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(4), ["c1", "c2"])
+
+    @patch("workspace.run_command")
+    def test_gui_rename(self, fake_run_command):
+        f = fake_desktop.FakeDesktop()
+        f.SetWorkspaces(["a", "b", "c"])
+        f.Switch(1)
+        self.assertEqual(f.GetCurrWorkspace(), "b")
+        f.expect_command(
+            "zenity --text='Rename Current Workspace' --entry --entry-text='b'",
+            "",
+            "new_name_123",
+        )
+
+        def fake_run(command, stdin=""):
+            return f.run_command(command, stdin)
+
+        fake_run_command.side_effect = fake_run
+
+        workspace.gui_rename()
+
+        self.assertEqual(f.GetWorkspaces(), ["a", "new_name_123", "c"])
+
+    @patch("workspace.run_command")
+    def test_gui_switch(self, fake_run_command):
+        f = fake_desktop.FakeDesktop()
+        f.SetWorkspaces(["a", "b", "c"])
+        f.Switch(1)
+        self.assertEqual(f.GetCurrWorkspace(), "b")
+        f.expect_command(
+            "zenity --list --column=num --column=Curr --column='Desktop Name' --hide-column=1 --height=540 --width=300",
+            "0\n.\na\n1\n>>>>\nb\n2\n.\nc\n",
+            "2",
+        )
+
+        def fake_run(command, stdin=""):
+            return f.run_command(command, stdin)
+
+        fake_run_command.side_effect = fake_run
+
+        workspace.gui_switch()
+
+        self.assertEqual(0, len(f.unexpected_commands), f.unexpected_commands)
+
+        self.assertEqual(f.GetCurrWorkspace(), "c")
 
 
 if __name__ == "__main__":
