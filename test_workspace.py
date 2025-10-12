@@ -129,7 +129,8 @@ class TestWorkspace(unittest.TestCase):
         workspace.delete(num)
         workspace.delete(num)
 
-    def test_switch(self):
+    @patch("workspace.run_command")
+    def test_switch(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "extra", "cool"])
         self.assertEqual(f.GetCurrWorkspace(), "main")
@@ -137,7 +138,7 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.switch(1)
         self.assertEqual(f.GetCurrWorkspace(), "extra")
@@ -145,14 +146,15 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual(f.GetCurrWorkspace(), "cool")
 
     @patch("sys.stdout", new_callable=io.StringIO)
-    def test_list(self, mock_stdout):
+    @patch("workspace.run_command")
+    def test_list(self, fake_run_command, mock_stdout):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "extra", "cool"])
 
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.list_workspaces()
 
@@ -162,7 +164,8 @@ class TestWorkspace(unittest.TestCase):
         self.assertIn(" 2  -  0  cool\n", mock_stdout.getvalue())
 
     @patch("sys.stdout", new_callable=io.StringIO)
-    def test_list_with_some_windows(self, mock_stdout):
+    @patch("workspace.run_command")
+    def test_list_with_some_windows(self, fake_run_command, mock_stdout):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "extra", "cool"])
         f.OpenWindow(0, "gmail - chromium")
@@ -174,7 +177,7 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.list_workspaces()
 
@@ -184,7 +187,8 @@ class TestWorkspace(unittest.TestCase):
         self.assertIn(" 2  -  3  cool\n", mock_stdout.getvalue())
 
     @patch("sys.stdout", new_callable=io.StringIO)
-    def test_listwin_on_a_workspace(self, mock_stdout):
+    @patch("workspace.run_command")
+    def test_listwin_on_a_workspace(self, fake_run_command, mock_stdout):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "extra", "cool"])
         f.OpenWindow(0, "gmail - chromium")
@@ -196,7 +200,7 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.list_windows("2")
 
@@ -209,7 +213,8 @@ class TestWorkspace(unittest.TestCase):
         self.assertIn("0x00000006   2  Terminal", mock_stdout.getvalue())
 
     @patch("sys.stdout", new_callable=io.StringIO)
-    def test_listwin(self, mock_stdout):
+    @patch("workspace.run_command")
+    def test_listwin(self, fake_run_command, mock_stdout):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "extra", "cool"])
         f.OpenWindow(0, "gmail - chromium")
@@ -221,7 +226,7 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.list_windows("none")
 
@@ -233,7 +238,8 @@ class TestWorkspace(unittest.TestCase):
         self.assertIn("0x00000005   2  Terminal", mock_stdout.getvalue())
         self.assertIn("0x00000006   2  Terminal", mock_stdout.getvalue())
 
-    def test_rename(self):
+    @patch("workspace.run_command")
+    def test_rename(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "extra", "cool"])
         self.assertEqual(f.GetCurrWorkspace(), "main")
@@ -241,7 +247,7 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.rename(1, "middle")
         self.assertEqual(f.GetWorkspaces(), ["main", "middle", "cool"])
@@ -249,7 +255,8 @@ class TestWorkspace(unittest.TestCase):
         workspace.rename(2, "last")
         self.assertEqual(f.GetWorkspaces(), ["main", "middle", "last"])
 
-    def test_insert_new_at_end(self):
+    @patch("workspace.run_command")
+    def test_insert_new_at_end(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "main")
@@ -257,12 +264,13 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.insert_before(2)
         self.assertEqual(f.GetWorkspaces(), ["main", "last", "new-desktop"])
 
-    def test_insert_new_at_start(self):
+    @patch("workspace.run_command")
+    def test_insert_new_at_start(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "main")
@@ -270,12 +278,13 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.insert_before(0)
         self.assertEqual(f.GetWorkspaces(), ["new-desktop", "main", "last"])
 
-    def test_insert_new_in_middle(self):
+    @patch("workspace.run_command")
+    def test_insert_new_in_middle(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "main")
@@ -283,13 +292,14 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.insert_before(1)
         self.assertEqual(f.GetWorkspaces(), ["main", "new-desktop", "last"])
 
     @patch("sys.stdout", new_callable=io.StringIO)
-    def test_insert_moves_windows(self, mock_stdout):
+    @patch("workspace.run_command")
+    def test_insert_moves_windows(self, fake_run_command, mock_stdout):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "main")
@@ -300,7 +310,7 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.insert_before(1)
         self.assertEqual(f.GetWorkspaces(), ["main", "new-desktop", "last"])
@@ -313,7 +323,8 @@ class TestWorkspace(unittest.TestCase):
         self.assertIn("0x00000003   2  TuxRacer", mock_stdout.getvalue())
         self.assertIn("0x00000004   2  Terminal", mock_stdout.getvalue())
 
-    def test_insert_moves_the_current_workspace_if_it_should(self):
+    @patch("workspace.run_command")
+    def test_insert_moves_the_current_workspace_if_it_should(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "last"])
         f.Switch(1)
@@ -322,13 +333,16 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.insert_before(1)
         self.assertEqual(f.GetWorkspaces(), ["main", "new-desktop", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "last")
 
-    def test_insert_does_not_moves_the_current_workspace_if_it_should_not(self):
+    @patch("workspace.run_command")
+    def test_insert_does_not_moves_the_current_workspace_if_it_should_not(
+        self, fake_run_command
+    ):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "last"])
         f.Switch(0)
@@ -337,13 +351,14 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.insert_before(1)
         self.assertEqual(f.GetWorkspaces(), ["main", "new-desktop", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "main")
 
-    def test_insert_before_current_workspace(self):
+    @patch("workspace.run_command")
+    def test_insert_before_current_workspace(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "a", "b", "last"])
         f.Switch(2)
@@ -352,13 +367,14 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.insert_before("none")
         self.assertEqual(f.GetWorkspaces(), ["main", "a", "new-desktop", "b", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "b")
 
-    def test_delete_at_end(self):
+    @patch("workspace.run_command")
+    def test_delete_at_end(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "last"])
         f.Switch(0)
@@ -367,13 +383,14 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.delete(1)
         self.assertEqual(f.GetWorkspaces(), ["main"])
         self.assertEqual(f.GetCurrWorkspace(), "main")
 
-    def test_delete_at_start(self):
+    @patch("workspace.run_command")
+    def test_delete_at_start(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "last"])
         f.Switch(0)
@@ -382,13 +399,14 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.delete(0)
         self.assertEqual(f.GetWorkspaces(), ["last"])
         self.assertEqual(f.GetCurrWorkspace(), "last")
 
-    def test_delete_in_middle(self):
+    @patch("workspace.run_command")
+    def test_delete_in_middle(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "middle", "last"])
         f.Switch(0)
@@ -397,13 +415,14 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.delete(1)
         self.assertEqual(f.GetWorkspaces(), ["main", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "main")
 
-    def test_delete_moves_the_current_workspace_if_it_should(self):
+    @patch("workspace.run_command")
+    def test_delete_moves_the_current_workspace_if_it_should(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "middle", "last"])
         f.Switch(2)
@@ -412,13 +431,14 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.delete(1)
         self.assertEqual(f.GetWorkspaces(), ["main", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "last")
 
-    def test_delete_moves_windows_if_it_should(self):
+    @patch("workspace.run_command")
+    def test_delete_moves_windows_if_it_should(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "middle", "two", "last"])
         f.Switch(2)
@@ -431,7 +451,7 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.delete(1)
         self.assertEqual(f.GetWorkspaces(), ["main", "two", "last"])
@@ -441,7 +461,10 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual(f.GetWindowsOnWorkspace(2), ["Terminal"])
 
     @patch("sys.stdout", new_callable=io.StringIO)
-    def test_delete_fails_if_there_are_windows_on_the_workspace(self, mock_stdout):
+    @patch("workspace.run_command")
+    def test_delete_fails_if_there_are_windows_on_the_workspace(
+        self, fake_run_command, mock_stdout
+    ):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "middle", "last"])
         f.Switch(1)
@@ -451,14 +474,15 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.delete(1)
         self.assertIn("Error: Close or move the windows first", mock_stdout.getvalue())
         self.assertEqual(f.GetWorkspaces(), ["main", "middle", "last"])
         self.assertEqual(f.GetCurrWorkspace(), "middle")
 
-    def test_curr_workspace_is_deleted(self):
+    @patch("workspace.run_command")
+    def test_curr_workspace_is_deleted(self, fake_run_command):
         f = fake_desktop.FakeDesktop()
         f.SetWorkspaces(["main", "middle", "last"])
         f.Switch(1)
@@ -467,7 +491,7 @@ class TestWorkspace(unittest.TestCase):
         def fake_run(command, stdin=""):
             return f.run_command(command, stdin)
 
-        workspace.run_command = fake_run
+        fake_run_command.side_effect = fake_run
 
         workspace.delete("none")
         self.assertEqual(f.GetWorkspaces(), ["main", "last"])
