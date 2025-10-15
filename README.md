@@ -52,13 +52,19 @@ Or it can be found directly here:
 
 I recommend the following key bindings
 
-`<ctrl><alt>L` to `workspace.py gui\_switch`
+Key Combination | Command
+ --- | ---
+`<ctrl><alt>L` | `workspace.py gui_switch`
+`<ctrl><alt>R` | `workspace.py gui_rename`
 
-`<ctrl><alt>R` to `workspace.py gui\_rename`
+This works for me because it's similar to pre-existing bindings:
 
-This works for me because it's similar to pre-existing bindings 
-`<ctrl><alt><left>` and `<ctrl><alt><right>` to switch to the workspace to the
-left or right. If `<ctrl><alt>L` is bound to lock screen, then you could rebind
+Key Combination | Command
+ --- | ---
+`<ctrl><alt><left>` | switch one workspace to the left.
+`<ctrl><alt><right>` | switch one workspace to the right.
+
+If `<ctrl><alt>L` is bound to lock screen, then you could rebind
 lock screen to `<mod4>L` instead.
 
 
