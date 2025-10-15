@@ -19,24 +19,24 @@ On a Debian system, these can be installed with:
 
 Example Commands | Description
 --- | ---
-workspace help | Display this help.
-workspace list | List all workspaces.
-workspace listwin | List all windows.
-workspace listwin 8 | List all windows in workspace 8.
-workspace switch 4 | Switch to workspace 4.
-workspace rename 3 "foo bar" | Rename workspace 3 to "foo bar".
-workspace insert | Insert a workspace before the current.
-workspace insert 3 | Insert a workspace before workspace 3.
-workspace delete | Delete the current workspace.
-workspace delete 3 | Delete workspace 3.
-workspace movewins 7 8 | Moves all windows from desktop 7 to 8.
-workspace debug insert | Print debugging while inserting a workspace. Any command can be run with debugging turned on like this.
-workspace swap 3 5 | Swap workspaces 3 and 5.
-workspace swapleft | Swap the current workspace to the left.
-workspace swapright | Swap the curr workspace to the right.
-workspace move 3 5 | Move workspace 3 to just before 5.
-workspace gui\_rename | Open a dialog box to rename the current workspace.
-workspace gui\_switch | Open a dialog box to list all the workspaces and allow the user to switch to another workspace.
+workspace.py help | Display this help.
+workspace.py list | List all workspaces.
+workspace.py listwin | List all windows.
+workspace.py listwin 8 | List all windows in workspace 8.
+workspace.py switch 4 | Switch to workspace 4.
+workspace.py rename 3 "foo bar" | Rename workspace 3 to "foo bar".
+workspace.py insert | Insert a workspace before the current.
+workspace.py insert 3 | Insert a workspace before workspace 3.
+workspace.py delete | Delete the current workspace.
+workspace.py delete 3 | Delete workspace 3.
+workspace.py movewins 7 8 | Moves all windows from desktop 7 to 8.
+workspace.py debug insert | Print debugging while inserting a workspace. Any command can be run with debugging turned on like this.
+workspace.py swap 3 5 | Swap workspaces 3 and 5.
+workspace.py swapleft | Swap the current workspace to the left.
+workspace.py swapright | Swap the curr workspace to the right.
+workspace.py move 3 5 | Move workspace 3 to just before 5.
+workspace.py gui\_rename | Open a dialog box to rename the current workspace.
+workspace.py gui\_switch | Open a dialog box to list all the workspaces and allow the user to switch to another workspace.
 
 ## Installation
 
