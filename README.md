@@ -8,8 +8,11 @@ the windows they contain.
 This script requires `wmctrl`, `zenity`, and `python3`.
 
 On a Debian system, these can be installed with:
- `sudo apt install wmctrl`
- `sudo apt install zenity`
+
+`sudo apt install wmctrl`
+
+`sudo apt install zenity`
+
 `sudo apt install python3`
  
 ## Example Commands
@@ -50,8 +53,8 @@ Or it can be found directly here:
 I recommend the following key bindings
 
 `<ctrl><alt>L` to `workspace.py gui\_switch`
+
 `<ctrl><alt>R` to `workspace.py gui\_rename`
-etc...
 
 This works for me because it's similar to pre-existing bindings 
 `<ctrl><alt><left>` and `<ctrl><alt><right>` to switch to the workspace to the
