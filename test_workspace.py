@@ -16,7 +16,7 @@ def ShortSleep():
 
 # Real tests use the real desktop not the fake one. These tests attempt to
 # leave the final state of the desktop the same as before the test.
-run_real_tests = False
+run_real_tests = True
 
 
 class TestWorkspace(unittest.TestCase):
@@ -116,6 +116,7 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual(desktop_info["list"][num + 1][1], "new-desktop-A")
         workspace.delete(num)
         workspace.delete(num)
+        workspace.switch(curr)
 
     def test_real_swapright(self):
         if not run_real_tests:
@@ -141,6 +142,7 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual(desktop_info["list"][num + 1][1], "new-desktop-A")
         workspace.delete(num)
         workspace.delete(num)
+        workspace.switch(curr)
 
     @patch("workspace.run_command")
     def test_switch(self, fake_run_command):
@@ -634,9 +636,13 @@ class TestWorkspace(unittest.TestCase):
 
         fake_run_command.side_effect = fake_run
 
+        self.assertEqual(f.GetWorkspaces(), ["a", "b", "c", "d", "e"])
+        self.assertEqual(f.GetCurrWorkspace(), "b")
+
         workspace.move(3, 1)
 
         self.assertEqual(f.GetWorkspaces(), ["a", "d", "b", "c", "e"])
+        self.assertEqual(f.GetCurrWorkspace(), "b")
         self.assertCountEqual(f.GetWindowsOnWorkspace(0), ["a1", "a2"])
         self.assertCountEqual(f.GetWindowsOnWorkspace(1), ["d1", "d2"])
         self.assertCountEqual(f.GetWindowsOnWorkspace(2), ["b1", "b2"])
@@ -646,9 +652,35 @@ class TestWorkspace(unittest.TestCase):
         workspace.move(4, 0)
 
         self.assertEqual(f.GetWorkspaces(), ["e", "a", "d", "b", "c"])
+        self.assertEqual(f.GetCurrWorkspace(), "b")
         self.assertCountEqual(f.GetWindowsOnWorkspace(0), ["e1", "e2"])
         self.assertCountEqual(f.GetWindowsOnWorkspace(1), ["a1", "a2"])
         self.assertCountEqual(f.GetWindowsOnWorkspace(4), ["c1", "c2"])
+
+        workspace.move(0, 5)
+
+        self.assertEqual(f.GetWorkspaces(), ["a", "d", "b", "c", "e"])
+        self.assertEqual(f.GetCurrWorkspace(), "b")
+        self.assertCountEqual(f.GetWindowsOnWorkspace(0), ["a1", "a2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(1), ["d1", "d2"])
+        self.assertCountEqual(f.GetWindowsOnWorkspace(4), ["e1", "e2"])
+
+        workspace.move(2, 0)
+
+        self.assertEqual(f.GetWorkspaces(), ["b", "a", "d", "c", "e"])
+        self.assertEqual(f.GetCurrWorkspace(), "b")
+
+        workspace.move(0, 5)
+
+        self.assertEqual(f.GetWorkspaces(), ["a", "d", "c", "e", "b"])
+        self.assertEqual(f.GetCurrWorkspace(), "b")
+        self.assertCountEqual(f.GetWindowsOnWorkspace(4), ["b1", "b2"])
+
+        workspace.move(2, 0)
+
+        self.assertEqual(f.GetWorkspaces(), ["c", "a", "d", "e", "b"])
+        self.assertEqual(f.GetCurrWorkspace(), "b")
+        self.assertCountEqual(f.GetWindowsOnWorkspace(4), ["b1", "b2"])
 
     @patch("workspace.run_command")
     def test_gui_rename(self, fake_run_command):

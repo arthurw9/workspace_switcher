@@ -282,11 +282,22 @@ def move(desktop, new_idx):
     if new_idx == desktop:
         return
     debug(f"move {desktop} {new_idx}")
+    switch_to_idx = desktop_info["curr"]
+    if desktop == desktop_info["curr"] and desktop > new_idx:
+        switch_to_idx = new_idx
+    if desktop == desktop_info["curr"] and desktop < new_idx:
+        switch_to_idx = new_idx - 1
+    elif new_idx <= desktop_info["curr"] and desktop > desktop_info["curr"]:
+        switch_to_idx = desktop_info["curr"] + 1
+    elif new_idx > desktop_info["curr"] and desktop < desktop_info["curr"]:
+        switch_to_idx = desktop_info["curr"] - 1
     insert_before(new_idx)
     if new_idx < desktop:
         desktop += 1
     swap(desktop, new_idx)
     delete(desktop)
+    debug(f"move switching from {desktop_info['curr']} to {switch_to_idx}")
+    switch(switch_to_idx)
 
 
 def gui_rename():

@@ -2,7 +2,7 @@
 
 ## Overview
 This script lets you easily create, delete, and move workspaces along with all
-the windows they contain.
+the windows in them.
 
 ## Requirements
 This script requires `wmctrl`, `zenity`, and `python3`.
@@ -30,7 +30,7 @@ Example Commands | Description
 `workspace.py delete` | Delete the current workspace.
 `workspace.py delete 3` | Delete workspace 3.
 `workspace.py movewins 7 8` | Moves all windows from desktop 7 to 8.
-`workspace.py debug insert` | Print debugging while inserting a workspace. Any command can be run with debugging turned on like this.
+`workspace.py debug insert` | Print debugging info while inserting a workspace. Any command can be run with debugging info like this.
 `workspace.py swap 3 5` | Swap workspaces 3 and 5.
 `workspace.py swapleft` | Swap the current workspace to the left.
 `workspace.py swapright` | Swap the curr workspace to the right.
@@ -45,10 +45,7 @@ Copy the scripts to your favorite directory. Make sure its executable bit is on.
 Now create keyboard shortcuts to your favorite commands. 
 
 On my system running Debian MATE, the keyboard shortcuts can be found in the menu under
-`System > Preferences > Hardware > Keyboard Shortcuts`.
-
-Or it can be found directly here:
-`mate-keybinding-properties`
+`System > Preferences > Hardware > Keyboard Shortcuts`, or it can be accessed directly by running: `mate-keybinding-properties`
 
 I recommend the following key bindings
 
@@ -57,7 +54,7 @@ Key Combination | Command
 `<ctrl><alt>L` | `workspace.py gui_switch`
 `<ctrl><alt>R` | `workspace.py gui_rename`
 
-This works for me because it's similar to pre-existing bindings:
+This works for me because it's similar to these pre-existing bindings:
 
 Key Combination | Command
  --- | ---
